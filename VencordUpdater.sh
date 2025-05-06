@@ -1,20 +1,24 @@
 #!/bin/bash
 set -e
 
-cd /tmp
+sudo pacman -Sy --noconfirm git nodejs npm wget curl
 
-wget -O discord.tar.gz "https://discordapp.com/api/download?platform=linux&format=tar.gz"
+if ! command -v pnpm &> /dev/null; then
+    sudo npm install -g pnpm
+fi
 
-tar -xzf discord.tar.gz
+cd ~
 
-sudo rm -rf /opt/discord
-sudo mv Discord /opt/discord
+if [ -d "Vencord" ]; then
+    cd Vencord
+    git pull
+else
+    git clone https://github.com/Vendicated/Vencord.git
+    cd Vencord
+fi
 
-sudo ln -sf /opt/discord/Discord /usr/bin/discord
+pnpm install
+pnpm build
+pnpm inject
 
-rm discord.tar.gz
-
-echo "Installiere Vencord..."
-sh -c "$(curl -sS https://raw.githubusercontent.com/Vendicated/VencordInstaller/main/install.sh)"
-
-echo "Fertig!"
+echo "Done."
